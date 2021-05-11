@@ -28,7 +28,7 @@ CRUD applications are the foundation of most web applications. Being able to man
 ### Task 2: Project Requirements
 #### Editing a Movie
 > *Let's start by walking through the process of adding the routing, component and service calls need for resource updating* 
-
+OK THIS NOW SHOULD WORK...
 [X] make pull request and submit project link through Canvas
 * [X] First, we need to be able to navigate to the edit movie component. In App.js, add in the `<EditMovieForm> `component to the supplied edit route.
 
