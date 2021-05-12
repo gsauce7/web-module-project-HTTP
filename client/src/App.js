@@ -1,11 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
-import { Route, Switch, Redirect } from "react-router-dom";
+import {
+  Route,
+  Switch,
+  Redirect,
+  useParams,
+  useHistory,
+} from 'react-router-dom';
 import MovieList from './components/MovieList';
 import Movie from './components/Movie';
 
 import MovieHeader from './components/MovieHeader';
-
+import DeleteMovieModal from './components/DeleteMovieModal';
+import AddMovieForm from './components/AddMovieForm';
 import EditMovieForm from './components/EditMovieForm';
 import FavoriteMovieList from './components/FavoriteMovieList';
 
@@ -15,48 +22,80 @@ const App = (props) => {
   const [movies, setMovies] = useState([]);
   const [favoriteMovies, setFavoriteMovies] = useState([]);
 
-  useEffect(()=>{
-    axios.get('http://localhost:5000/api/movies')
-      .then(res => {
+  useEffect(() => {
+    axios
+      .get('http://localhost:5000/api/movies')
+      .then((res) => {
         setMovies(res.data);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   }, []);
 
-  const deleteMovie = (id)=> {
-  }
+  const deleteMovie = (id) => {
+    setMovies(movies.filter((item) => item.id !== Number(id)));
+  };
 
-  const addToFavorites = (movie) => {
-    
-  }
+  const addToFavorites = (id) => {
+    const newFavorite = movies.find((movie) => {
+      if (movie.id == id) {
+        return movie;
+      }
+    });
+    const checkIfExist = favoriteMovies.find((favMovie) => {
+      if (favMovie.id == id) {
+        return favMovie;
+      }
+    });
+
+    setFavoriteMovies(
+      JSON.stringify(checkIfExist) === JSON.stringify(newFavorite)
+        ? [...favoriteMovies]
+        : [...favoriteMovies, newFavorite]
+    );
+  };
 
   return (
     <div>
-      <nav className="navbar navbar-dark bg-dark">
-        <span className="navbar-brand" ><img width="40px" alt="" src="./Lambda-Logo-Red.png"/> HTTP / CRUD Module Project</span>
+      <nav className='navbar navbar-dark bg-dark'>
+        <span className='navbar-brand'>
+          <img width='40px' alt='' src='./Lambda-Logo-Red.png' /> HTTP / CRUD
+          Module Project
+        </span>
       </nav>
 
-      <div className="container">
-        <MovieHeader/>
-        <div className="row ">
-          <FavoriteMovieList favoriteMovies={favoriteMovies}/>
-        
+      <div className='container'>
+        <MovieHeader />
+        <div className='row '>
+          <FavoriteMovieList
+            favoriteMovies={favoriteMovies}
+            setFavoriteMovies={setFavoriteMovies}
+          />
+
           <Switch>
-            <Route path="/movies/edit/:id">
+            <Route path='/movies/edit/:id'>
+              <EditMovieForm setMovie={setMovies} />
             </Route>
 
-            <Route path="/movies/:id">
-              <Movie/>
+            <Route path='/movies/delete/:id'>
+              <DeleteMovieModal {...props} deleteMovie={deleteMovie} />
             </Route>
 
-            <Route path="/movies">
-              <MovieList movies={movies}/>
+            <Route path='/movies/add'>
+              <AddMovieForm setMovie={setMovies} />
             </Route>
 
-            <Route path="/">
-              <Redirect to="/movies"/>
+            <Route path='/movies/:id'>
+              <Movie {...props} addToFavorites={addToFavorites} />
+            </Route>
+
+            <Route path='/movies'>
+              <MovieList {...props} movies={movies} />
+            </Route>
+
+            <Route path='/'>
+              <Redirect to='/movies' />
             </Route>
           </Switch>
         </div>
@@ -65,6 +104,4 @@ const App = (props) => {
   );
 };
 
-
 export default App;
-
